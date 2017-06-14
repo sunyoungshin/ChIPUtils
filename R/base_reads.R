@@ -32,13 +32,14 @@ create_reads <- function( reads_file, is_PET = FALSE )
   if(is_PET){
     gpairs <- readGAlignmentPairs(reads_file , param = param)
     sqnms <- as.character(seqnames(gpairs))
-    starts = ifelse(strand(gpairs)=="+", start(gpairs@first), start(gpairs@last))
-    ends = ifelse(strand(gpairs)=="+", end(gpairs@last), end(gpairs@first))
+    strs <- as.character(strand(gpairs))
+    starts = ifelse(strs=="+", start(gpairs@first), start(gpairs@last))
+    ends = ifelse(strs=="+", end(gpairs@last), end(gpairs@first))
     idx <- which(ends - starts + 1 > 0)
     stopifnot(length(idx) > 0)
     greads <- GRanges(seqnames = sqnms[idx],
       ranges = IRanges(start = starts[idx],end = ends[idx]),
-      strand = "*")
+      strand = strs[idx])
   }else{
     greads <- readGAlignments(reads_file,param = param)
     greads <- as(greads,"GRanges")
